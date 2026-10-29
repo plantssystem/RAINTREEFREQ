@@ -253,13 +253,13 @@ const $=s=>document.querySelector(s);
 const lbl=t=>t==='間奏'?t:t+'-melo';
 
 /* ---------- state ---------- */
-const P={bpm:113,key:0,mutate:0,note:100,reverb:0,echo:10};
+const P={bpm:113,key:0,mutate:0,note:100,reverb:0,echo:30};
 const T=[
   {n:'MELO',w:'square pluck · melody',vol:.85,mute:false,kind:'sq',g:.26,pan:0},
-  {n:'PEDAL',w:'fm bell · G pedal',vol:.8,mute:false,kind:'bell',g:.24,pan:-.25},
-  {n:'PAD',w:'saw pad · chords',vol:.7,mute:false,kind:'pad',g:.13,pan:0},
-  {n:'ARP',w:'piano · 8th arp',vol:.8,mute:false,kind:'piano',g:.2,pan:-.3},
-  {n:'ARP 2',w:'sine pluck · counter',vol:.8,mute:false,kind:'pluck2',g:.28,pan:.3}];
+  {n:'PEDAL',w:'fm bell · G pedal',vol:.8,mute:false,kind:'bell',g:.34,pan:-.25},
+  {n:'PAD',w:'saw pad · chords',vol:.7,mute:false,kind:'pad',g:.26,pan:0},
+  {n:'ARP',w:'piano · 8th arp',vol:.8,mute:false,kind:'piano',g:.3,pan:-.3},
+  {n:'ARP 2',w:'sine pluck · counter',vol:.8,mute:false,kind:'pluck2',g:.38,pan:.3}];
 let mode='orig',dirMode='fwd',holdType='A',pendingJump=false;
 let ctx=null,N={},tn=[],timer=null,running=true,t0=0;
 let step=0,nextT=0,evs=[],secPtr={sec:0,i:0};
@@ -285,6 +285,8 @@ function log(who,msg,cls){
 /* ---------- audio ---------- */
 function initAudio(){
   ctx=new (window.AudioContext||window.webkitAudioContext)();
+  ctx.onstatechange=()=>{if(ctx.state!=="running"&&ctx.state!=="closed")ctx.resume().catch(()=>{});};
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden&&ctx.state!=="running")ctx.resume().catch(()=>{});});
   const master=ctx.createGain();master.gain.value=.7;
   const comp=ctx.createDynamicsCompressor();comp.threshold.value=-8;comp.knee.value=0;comp.ratio.value=20;comp.attack.value=.002;comp.release.value=.1;
   master.connect(comp);comp.connect(ctx.destination);
